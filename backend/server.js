@@ -17,7 +17,7 @@ dotenv.config();
 
 
 app.use(cors({
-  origin: URL,
+  origin: import.meta.env.URL,
   credentials: true
 }));
 
