@@ -17,27 +17,46 @@ dotenv.config();
 
 const app = express();
 
-const allowedOrigins = [
-  "http://localhost:5173",
-  "https://foodify-web-app-front.vercel.app",
-];
+const allowedOrigins = new Set(
+  (process.env.ALLOWED_ORIGINS || "")
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean)
+);
 
 app.use(express.json());
 
+// CORS must be before routes
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+
+  if (origin && allowedOrigins.has(origin)) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+  }
+
+  res.setHeader("Vary", "Origin");
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+  res.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,PATCH,DELETE,OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+
+  // Handle preflight immediately
+  if (req.method === "OPTIONS") {
+    return res.status(204).end();
+  }
+
+  next();
+});
+
+// (optional) still keep cors middleware; but header middleware above is the key
 app.use(
   cors({
-    origin: function (origin, callback) {
-      if (!origin) return callback(null, true);
-      if (allowedOrigins.includes(origin)) return callback(null, true);
-      return callback(new Error("CORS blocked for origin: " + origin));
+    origin: (origin, cb) => {
+      if (!origin) return cb(null, true);
+      return allowedOrigins.has(origin) ? cb(null, true) : cb(null, false);
     },
     credentials: true,
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
-
-app.options("*", cors());
 
 // routes
 app.use("/", userRoutes);
@@ -50,7 +69,8 @@ app.use("/", authRoutes);
 app.use("/", restOrder);
 app.use("/", userOrder);
 
-// connect db once per cold start
+// connect DB on cold start (ensure connectDB doesn't call process.exit)
 connectDB();
 
 export default app;
+
