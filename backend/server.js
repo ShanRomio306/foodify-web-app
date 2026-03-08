@@ -20,7 +20,7 @@ app.use(express.json());
 
 /**
  * CORS (Vercel-friendly)
- * Set ALLOWED_ORIGINS in your backend environment variables like:
+ * Set ALLOWED_ORIGINS in backend env like:
  * ALLOWED_ORIGINS=http://localhost:5173,https://foodify-web-app-front.vercel.app
  */
 const allowedOrigins = new Set(
@@ -59,12 +59,9 @@ app.use((req, res, next) => {
   next();
 });
 
-// Health check (keep this for debugging)
+// Health check endpoints (safe for production)
 app.get("/health", (req, res) => res.json({ ok: true }));
-
-app.get("/version", (req, res) => {
-  res.json({ version: "cors-preflight-fix-1" });
-});
+app.get("/version", (req, res) => res.json({ version: "cors-preflight-fix-1" }));
 
 // Routes
 app.use("/", userRoutes);
@@ -77,7 +74,7 @@ app.use("/", authRoutes);
 app.use("/", restOrder);
 app.use("/", userOrder);
 
-// DB connect on cold start
+// DB connect on cold start (do not crash function if DB fails)
 connectDB().catch((err) => {
   console.error("DB connection failed:", err);
 });
