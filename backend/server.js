@@ -58,6 +58,8 @@ app.use(
   })
 );
 
+app.get("/health", (req, res) => res.json({ ok: true }));
+
 // routes
 app.use("/", userRoutes);
 app.use("/", restRoutes);
