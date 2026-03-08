@@ -1,5 +1,4 @@
 import express from "express";
-import cors from "cors";
 import dotenv from "dotenv";
 import { connectDB } from "./config/db.js";
 
@@ -17,6 +16,13 @@ dotenv.config();
 
 const app = express();
 
+app.use(express.json());
+
+/**
+ * CORS (Vercel-friendly)
+ * Set ALLOWED_ORIGINS in your backend environment variables like:
+ * ALLOWED_ORIGINS=http://localhost:5173,https://foodify-web-app-front.vercel.app
+ */
 const allowedOrigins = new Set(
   (process.env.ALLOWED_ORIGINS || "")
     .split(",")
@@ -24,22 +30,28 @@ const allowedOrigins = new Set(
     .filter(Boolean)
 );
 
-app.use(express.json());
-
-// CORS must be before routes
 app.use((req, res, next) => {
   const origin = req.headers.origin;
 
+  // Allow only configured origins
   if (origin && allowedOrigins.has(origin)) {
     res.setHeader("Access-Control-Allow-Origin", origin);
   }
 
+  // Helps caches/CDNs handle per-origin responses
   res.setHeader("Vary", "Origin");
-  res.setHeader("Access-Control-Allow-Credentials", "true");
-  res.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,PATCH,DELETE,OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
-  // Handle preflight immediately
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET,POST,PUT,PATCH,DELETE,OPTIONS"
+  );
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "Content-Type, Authorization"
+  );
+
+  // Preflight request
   if (req.method === "OPTIONS") {
     return res.status(204).end();
   }
@@ -47,20 +59,10 @@ app.use((req, res, next) => {
   next();
 });
 
-// (optional) still keep cors middleware; but header middleware above is the key
-app.use(
-  cors({
-    origin: (origin, cb) => {
-      if (!origin) return cb(null, true);
-      return allowedOrigins.has(origin) ? cb(null, true) : cb(null, false);
-    },
-    credentials: true,
-  })
-);
-
+// Health check (keep this for debugging)
 app.get("/health", (req, res) => res.json({ ok: true }));
 
-// routes
+// Routes
 app.use("/", userRoutes);
 app.use("/", restRoutes);
 app.use("/", paymentRoutes);
@@ -71,8 +73,7 @@ app.use("/", authRoutes);
 app.use("/", restOrder);
 app.use("/", userOrder);
 
-// connect DB on cold start (ensure connectDB doesn't call process.exit)
+// DB connect on cold start
 connectDB();
 
 export default app;
-
