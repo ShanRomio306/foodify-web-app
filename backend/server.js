@@ -62,6 +62,10 @@ app.use((req, res, next) => {
 // Health check (keep this for debugging)
 app.get("/health", (req, res) => res.json({ ok: true }));
 
+app.get("/version", (req, res) => {
+  res.json({ version: "cors-preflight-fix-1" });
+});
+
 // Routes
 app.use("/", userRoutes);
 app.use("/", restRoutes);
