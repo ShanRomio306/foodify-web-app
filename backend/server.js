@@ -78,6 +78,8 @@ app.use("/", restOrder);
 app.use("/", userOrder);
 
 // DB connect on cold start
-connectDB();
+connectDB().catch((err) => {
+  console.error("DB connection failed:", err);
+});
 
 export default app;
