@@ -144,7 +144,7 @@ export function CheckoutPage() {
                 <span>
                   {item.name} × {item.quantity}
                 </span>
-                <span>${(item.price * item.quantity).toFixed(2)}</span>
+                <span>₹{(item.price * item.quantity).toFixed(2)}</span>
               </div>
             ))}
           </div>
@@ -152,17 +152,17 @@ export function CheckoutPage() {
           <div className="space-y-2 border-t pt-4">
             <div className="flex justify-between text-gray-600">
               <span>Subtotal</span>
-              <span>${subtotal.toFixed(2)}</span>
+              <span>₹{subtotal.toFixed(2)}</span>
             </div>
 
             <div className="flex justify-between text-gray-600">
               <span>Tax</span>
-              <span>${tax.toFixed(2)}</span>
+              <span>₹{tax.toFixed(2)}</span>
             </div>
 
             <div className="flex justify-between text-xl font-bold pt-2">
               <span>Total</span>
-              <span className="text-orange-600">${total.toFixed(2)}</span>
+              <span className="text-orange-600">₹{total.toFixed(2)}</span>
             </div>
           </div>
 
