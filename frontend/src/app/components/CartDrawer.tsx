@@ -93,7 +93,7 @@ export function CartDrawer() {
                             {item.name}
                           </h3>
                           <p className="text-sm text-gray-500 mt-1">
-                            ${item.price}
+                            ₹{item.price}
                           </p>
                         </div>
 
@@ -135,7 +135,7 @@ export function CartDrawer() {
                         </div>
 
                         <div className="font-medium text-gray-900">
-                          ${(item.price * item.quantity).toFixed(2)}
+                          ₹{(item.price * item.quantity).toFixed(2)}
                         </div>
                       </div>
 
@@ -157,17 +157,17 @@ export function CartDrawer() {
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
                 <span className="text-gray-600">Subtotal</span>
-                <span>${subtotal.toFixed(2)}</span>
+                <span>₹{subtotal.toFixed(2)}</span>
               </div>
 
               <div className="flex justify-between text-sm">
                 <span className="text-gray-600">Tax (10%)</span>
-                <span>${tax.toFixed(2)}</span>
+                <span>₹{tax.toFixed(2)}</span>
               </div>
 
               <div className="flex justify-between text-lg font-bold pt-2 border-t">
                 <span>Total</span>
-                <span className="text-orange-600">${total.toFixed(2)}</span>
+                <span className="text-orange-600">₹{total.toFixed(2)}</span>
               </div>
             </div>
 
