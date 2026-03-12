@@ -220,7 +220,7 @@ export function PaymentPage() {
               </div>
               <div className="flex justify-between text-2xl font-bold text-gray-900 pt-4 border-t border-gray-200">
                 <span>Total Amount</span>
-                <span className="text-orange-600">${total.toFixed(2)}</span>
+                <span className="text-orange-600">₹{total.toFixed(2)}</span>
               </div>
             </div>
 
