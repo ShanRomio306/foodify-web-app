@@ -61,7 +61,7 @@ export function PaymentSwipe({ onComplete, amount }: PaymentSwipeProps) {
         <motion.span
           animate={{ opacity: position > maxPosition.current * 0.5 ? 0 : 1 }}
         >
-          Swipe to Pay ${amount.toFixed(2)}
+          Swipe to Pay ₹{amount.toFixed(2)}
         </motion.span>
       </div>
 
