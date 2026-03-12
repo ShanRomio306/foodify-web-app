@@ -1,4 +1,4 @@
-import { Star, Clock, DollarSign } from "lucide-react";
+import { Star, Clock, DollarSign,IndianRupee } from "lucide-react";
 import { Badge } from "./ui/badge";
 import { Link } from "react-router-dom";
 
@@ -83,8 +83,8 @@ export function RestaurantCard({ restaurant }: RestaurantCardProps) {
             </div>
 
             <div className="flex items-center gap-1 text-gray-500">
-              <DollarSign className="w-4 h-4" />
-              <span>Min ${restaurant.minOrder ?? 10}</span>
+              <IndianRupee className="w-4 h-4" />
+              <span>Min ₹{restaurant.minOrder ?? 10}</span>
             </div>
 
           </div>
