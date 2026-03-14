@@ -59,7 +59,7 @@ export function RestaurantDetailsPage() {
 
     try {
 
-      const res = await api.get(`/menu/rest/${id}`);
+      const res = await api.get(`/rests/${id}/menu`);
       setMenuItems(res.data);
 
     } catch (err) {

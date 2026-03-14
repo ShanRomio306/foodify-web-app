@@ -6,8 +6,11 @@ import {
   deleteCategory
 } from "../controllers/categoryController.js"
 
+import { getRestaurantDashboardStats } from "../controllers/dashboardController.js";
+
 const router = express.Router()
 
+router.get("/rests/:id/dashboard-stats", getRestaurantDashboardStats);
 router.get("/", getCategories)
 router.post("/", createCategory)
 router.patch("/:id", updateCategory)

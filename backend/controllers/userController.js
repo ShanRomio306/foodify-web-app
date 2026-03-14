@@ -4,56 +4,67 @@ import jwt from "jsonwebtoken"
 
 
 
-export const registerUser = async (req,res) => {
+export const registerUser = async (req, res) => {
+  try {
+    // ✅ FIX: Destructure `role` from req.body
+    const { name, email, password, phone, address, role } = req.body;
 
-  try{
-
-    const { name,email,password,phone,address } = req.body
-
-    if(!name || !email || !password){
+    if (!name || !email || !password) {
       return res.status(400).json({
-        message:"Name, email and password required"
-      })
+        message: "Name, email and password required",
+      });
     }
 
-    const existing = await User.findOne({email})
-
-    if(existing){
+    const existing = await User.findOne({ email });
+    if (existing) {
       return res.status(400).json({
-        message:"User already exists"
-      })
+        message: "User already exists",
+      });
     }
+
+    // ✅ FIX: Use role if valid, otherwise default to "user"
+    const allowedRoles = ["user", "restaurant_admin", "super_admin"];
+    const userRole = role && allowedRoles.includes(role) ? role : "user";
 
     const user = await User.create({
       name,
       email,
       password,
       phone,
-      address
-    })
+      address,
+      role: userRole,  // ✅ FIX: Pass role to User.create
+    });
 
     const token = jwt.sign(
-      { id:user._id, role:user.role },
+      { id: user._id, role: user.role },
       process.env.JWT_SECRET,
-      { expiresIn:"7d" }
-    )
+      { expiresIn: "7d" }
+    );
 
-    res.json({ user, token })
-
-  }catch(err){
-    console.error(err)
-    res.status(500).json({message:"Registration failed"})
+    // ✅ FIX: Don't send password back
+    res.json({
+      token,
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
+    });
+  } catch (err) {
+    console.error(err);
+    if (err.code === 11000) {
+      return res.status(400).json({ message: "Email already exists" });
+    }
+    res.status(500).json({ message: "Registration failed" });
   }
-
-}
+};
 
 
 
 export const loginUser = async (req,res)=>{
 
   const { email, password } = req.body
-  console.log(email)
-  console.log(password)
 
   const user = await User.findOne({ email })
 
@@ -121,3 +132,30 @@ export async function changePassword(req,res){
 
   res.json({message:"Password updated"})
 }
+
+export async function getAllUsers(req, res){
+  try {
+    const users = await User.find().select("-password");
+    res.status(200).json(users);
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    res.status(500).json({ message: "Failed to fetch users" });
+  }
+};
+
+
+export async function deleteUser(req, res){
+  try {
+    const { id } = req.params;
+    const user = await User.findByIdAndDelete(id);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    return res.status(200).json({ message: "User deleted" });
+  } catch (error) {
+    console.error("Error deleting user:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};

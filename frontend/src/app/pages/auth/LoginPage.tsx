@@ -39,7 +39,22 @@ export function LoginPage() {
       toast.success("Login successful");
 
       if (user.role === "restaurant_admin") {
-        navigate("/restaurant-admin");
+         try {
+        const result = await api.get(`/rests/email/${email}`);
+        console.log("Restaurant data:", result.data); // Debug log
+          
+          if (result.data && result.data._id) {
+            localStorage.setItem("restaurantId", result.data._id);
+            console.log("Stored restaurantId:", result.data._id); // Debug log
+          } else {
+            toast.error("Restaurant ID not found");
+            console.error("No _id in response:", result.data);
+          }
+      } catch (error) {
+        console.error("Failed to fetch restaurant:", error);
+        toast.error("Failed to load restaurant data");
+      }
+      navigate("/restaurant-admin");
       } else if (user.role === "super_admin") {
         navigate("/super-admin");
       } else {
@@ -145,7 +160,7 @@ export function LoginPage() {
           </p>
 
           {/* Admin Links */}
-          {/* <div className="mt-6 pt-6 border-t border-gray-200">
+          {/* { <div className="mt-6 pt-6 border-t border-gray-200">
             <p className="text-sm text-gray-500 mb-2">Quick Access:</p>
             <div className="flex gap-2">
               <Link to="/restaurant-admin" className="flex-1">
@@ -159,7 +174,7 @@ export function LoginPage() {
                 </Button>
               </Link>
             </div>
-          </div> */}
+          </div> } */}
         </div>
       </div>
     </div>

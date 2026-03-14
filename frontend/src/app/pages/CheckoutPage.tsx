@@ -27,6 +27,7 @@ export function CheckoutPage() {
 
   const userId = localStorage.getItem("userId");
   const token = localStorage.getItem("token");
+  const restaurantId = localStorage.getItem("restaurantId");
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -73,7 +74,7 @@ export function CheckoutPage() {
 
   const placeOrder = async () => {
     try {
-      const res = await api.post("/order", { userId, note });
+      const res = await api.post("/order", { userId, note ,restaurantId });
 
       await refreshCart();
       const orderId = res.data?._id;
