@@ -1,15 +1,23 @@
-import { Outlet, Link, useLocation } from "react-router-dom";
-import { LayoutDashboard, UtensilsCrossed, ShoppingBag, Settings, Tag, FolderTree } from "lucide-react";
+import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
+import { LayoutDashboard, UtensilsCrossed, ShoppingBag, Settings, Tag, FolderTree, LogOut } from "lucide-react";
+import { toast } from "sonner";
 
 export function RestaurantAdminLayout() {
   const location = useLocation();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.clear();
+    navigate("/");
+    toast.success("User Logged Out Successfully");
+  };
 
   const menuItems = [
     { path: "/restaurant-admin", icon: LayoutDashboard, label: "Dashboard" },
     { path: "/restaurant-admin/menu", icon: UtensilsCrossed, label: "Menu" },
-     { path: "/restaurant-admin/orders", icon: ShoppingBag, label: "Orders" },
-    //{ path: "/restaurant-admin/offers", icon: Tag, label: "Offers" },
+    { path: "/restaurant-admin/orders", icon: ShoppingBag, label: "Orders" },
     { path: "/restaurant-admin/settings", icon: Settings, label: "Settings" },
+    { icon: LogOut, label: "SignOut", action: handleLogout },
   ];
 
   return (
@@ -21,9 +29,25 @@ export function RestaurantAdminLayout() {
           <p className="text-sm text-gray-500 mt-1"></p>
         </div>
         <nav className="px-4 space-y-1">
-          {menuItems.map((item) => {
+          {menuItems.map((item, index) => {
             const Icon = item.icon;
-            const isActive = location.pathname === item.path;
+            const isActive = item.path && location.pathname === item.path;
+
+            // If item has action (like logout), render button
+            if (item.action) {
+              return (
+                <button
+                  key={item.label}
+                  onClick={item.action}
+                  className="flex items-center gap-3 px-4 py-3 rounded-lg transition-colors text-gray-700 hover:bg-gray-50 w-full"
+                >
+                  <Icon className="w-5 h-5" />
+                  <span className="font-medium">{item.label}</span>
+                </button>
+              );
+            }
+
+            // Regular menu item with Link
             return (
               <Link
                 key={item.path}
